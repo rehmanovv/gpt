@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>REHMANOV</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
+  body {
+    margin:0; padding:0;
+    background:#121820;
+    color:#cfd8dc;
+    font-family: 'Fira Mono', monospace;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    height:100vh;
+    user-select:none;
+  }
+  header {
+    margin: 30px 0 20px 0;
+    font-size: 3rem;
+    font-weight: 900;
+    color: #5bb1ff;
+    position: relative;
+    overflow: hidden;
+    text-shadow: 0 0 12px #2d6fc6aa;
+  }
+  header::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -70%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, #7ec0ff88, transparent);
+    animation: shine 3s infinite;
+  }
+  @keyframes shine {
+    0% { left: -70%; }
+    100% { left: 130%; }
+  }
+  #chat {
+    flex:1;
+    width: 95%;
+    max-width: 700px;
+    background: #1c2733;
+    border-radius: 14px;
+    padding: 20px 30px;
+    overflow-y: auto;
+    box-shadow: 0 0 20px #5bb1ff33;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: #5bb1ff transparent;
+  }
+  #chat::-webkit-scrollbar {
+    width: 8px;
+  }
+  #chat::-webkit-scrollbar-thumb {
+    background: #5bb1ff;
+    border-radius: 6px;
+  }
+  .msg {
+    max-width: 65%;
+    padding: 14px 20px;
+    border-radius: 16px;
+    font-size: 1rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    animation: fadeIn 0.35s ease forwards;
+  }
+  .user {
+    background: #2563a6;
+    color: #e1e9f0;
+    align-self: flex-end;
+    border-bottom-right-radius: 0;
+    box-shadow: 0 0 12px #174a7aaa;
+    font-weight: 700;
+  }
+  .bot {
+    background: #283845;
+    border: 1px solid #4f8bd6;
+    color: #c4d4e1;
+    align-self: flex-start;
+    border-bottom-left-radius: 0;
+    box-shadow: 0 0 12px #3e77d6aa;
+    font-style: italic;
+  }
+  #inputCont {
+    width: 95%;
+    max-width: 700px;
+    padding: 16px 30px;
+    background: #1c2733;
+    border-top: 1px solid #4f8bd6;
+    display: flex;
+    gap: 16px;
+    border-radius: 0 0 16px 16px;
+  }
+  #userInput {
+    flex-grow: 1;
+    font-family: 'Fira Mono', monospace;
+    font-size: 1rem;
+    padding: 16px 22px;
+    border-radius: 16px;
+    border: none;
+    outline: none;
+    background: #283845;
+    color: #d1e0f0;
+    box-shadow: inset 0 0 10px #4f8bd6cc;
+    transition: box-shadow 0.3s ease;
+  }
+  #userInput::placeholder {
+    color: #7aa7d7aa;
+  }
+  #userInput:focus {
+    box-shadow: inset 0 0 14px #5bb1ffcc;
+  }
+  #sendBtn {
+    background: #5bb1ff;
+    border: none;
+    border-radius: 16px;
+    padding: 0 34px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #122c54;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  #sendBtn:hover:not(:disabled) {
+    background: #7ec0ff;
+  }
+  #sendBtn:disabled {
+    background: #18406a;
+    cursor: not-allowed;
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>REHMANOV</header>
+
+<main id="chat"></main>
+
+<div id="inputCont">
+  <input id="userInput" type="text" placeholder="Sualını yaz, cavab verim..." autocomplete="off" autofocus />
+  <button id="sendBtn">Göndər</button>
+</div>
+
+<script>
+  const chat = document.getElementById('chat');
+  const input = document.getElementById('userInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  const responses = {
+    "salam": "Salam! Necəsən? Nə yenilik var?",
+    "necesen": "Çox yaxşıyam, sən necə hiss edirsən?",
+    "hava": "Hava bu gün əla görünür, amma bax internetdən dəqiqləşdir.",
+    "zarafat": "Bir az zarafat yaxşı olar: Niyə kompüter heç vaxt yorulmur? Çünki o, 'bit'lərlə işləyir!",
+    "adın nədir": "Mənim adım RehmanovBotdur, sənə kömək etməyə hazıram.",
+    "neynirsen": "Səninlə söhbət edirəm, suallarını cavablandırıram.",
+    "sağ ol": "Rica edirəm, həmişə kömək etməyə hazıram.",
+    "təşəkkür edirəm": "Hər zaman, mən buradayam.",
+    "iş tapmaq": "İş tapmaq üçün yaxşı CV hazırlamaq və aktiv olmaq vacibdir.",
+    "sevgili": "Sevgi həyatın gözəl tərəfidir, ona görə qiymət ver.",
+    "dəstək": "Sənə necə kömək edə bilərəm?",
+    "kitab": "Oxumağı sevirsən? Hansı janr maraqlıdır?",
+    "film": "Sevdiyin film janrları hansılardır?",
+    "musigi": "Musiqi ruhu dinlədir, sənin ən sevdiyin janr nədir?",
+    "texnologiya": "Texnologiya sürətlə inkişaf edir, nə maraqlıdır səni?",
+    "proqramlaşdırma": "Hansı proqramlaşdırma dilləri ilə işləmək istəyirsən?",
+    "tarix": "Tarixdən danışmaq maraqlıdır, hansı dövr səni daha çox maraqlandırır?",
+    "idman": "İdman sağlamlıq üçün önəmlidir, hansı növləri sevirsən?"
+  };
+
+  const sampleVariants = {
+    0: ["salam", "salamlar", "sabahın xeyir", "axşamın xeyir", "necə gedir?"],
+    1: ["necesən?", "yaxşısan?", "necə hiss edirsən?", "həyat necə keçir?", "hər şey yolundadır?"],
+    2: ["hava necədir?", "bu gün hava necədi?", "yağış yağacaq?", "günəşlidir?", "soyudur?"],
+    3: ["zarafat et", "komik söz de", "zarafat lazımdır", "gülmək istəyirəm", "məni güldür"],
+    4: ["adın nədir?", "botun adı nədir?", "səni necə çağırım?", "özünü tanıt", "adın hansıdır?"]
+  };
+
+  let lastSamples = [null, null, null, null, null];
+
+  function appendMessage(text, cls){
+    const div = document.createElement('div');
+    div.className = 'msg ' + cls;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function findAnswer(text){
+    text = text.toLowerCase();
+    for(let key in responses){
+      if(text.includes(key)) return responses[key];
+    }
+    return null;
+  }
+
+  function getRandomSample(i){
+    const variants = sampleVariants[i];
+    let choice;
+    do {
+      choice = variants[Math.floor(Math.random() * variants.length)];
+    } while(choice === lastSamples[i] && variants.length > 1);
+    lastSamples[i] = choice;
+    return choice;
+  }
+
+  function reply(){
+    const msg = input.value.trim();
+    if(!msg) return;
+
+    appendMessage(msg, 'user');
+    input.value = '';
+    input.disabled = true;
+    sendBtn.disabled = true;
+
+    let ans = findAnswer(msg);
+    if(ans){
+      appendMessage(ans, 'bot');
+      enableInput();
+      return;
+    }
+
+    let sugg = "";
+    for(let i=0; i<5; i++){
+      sugg += `- ${getRandomSample(i)}\n`;
+    }
+    appendMessage(`Bağışla, bunu bilmirəm.\nAmma bunları soruşa bilərsən:\n${sugg}`, 'bot');
+
+    enableInput();
+  }
+
+  function enableInput(){
+    input.disabled = false;
+    sendBtn.disabled = false;
+    input.focus();
+  }
+
+  sendBtn.addEventListener('click', reply);
+  input.addEventListener('keydown', e => {
+    if(e.key === "Enter") reply();
+  });
+</script>
+
+</body>
+</html>
