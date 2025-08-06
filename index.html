@@ -6,16 +6,19 @@
 <title>REHMANOV</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap');
+  * {
+    box-sizing: border-box;
+  }
   body {
-    margin:0; padding:0;
-    background:#121820;
-    color:#cfd8dc;
+    margin: 0;
+    padding: 0;
+    background: #121820;
+    color: #cfd8dc;
     font-family: 'Fira Mono', monospace;
-    display:flex;
+    display: flex;
     flex-direction: column;
-    align-items:center;
-    height:100vh;
-    user-select:none;
+    align-items: center;
+    min-height: 100vh;
   }
   header {
     margin: 30px 0 20px 0;
@@ -25,6 +28,7 @@
     position: relative;
     overflow: hidden;
     text-shadow: 0 0 12px #2d6fc6aa;
+    text-align: center;
   }
   header::after {
     content: "";
@@ -40,12 +44,12 @@
     100% { left: 130%; }
   }
   #chat {
-    flex:1;
+    flex-grow: 1;
     width: 95%;
     max-width: 700px;
     background: #1c2733;
-    border-radius: 14px;
-    padding: 20px 30px;
+    border-radius: 14px 14px 0 0;
+    padding: 20px 16px;
     overflow-y: auto;
     box-shadow: 0 0 20px #5bb1ff33;
     display: flex;
@@ -62,7 +66,7 @@
     border-radius: 6px;
   }
   .msg {
-    max-width: 65%;
+    max-width: 80%;
     padding: 14px 20px;
     border-radius: 16px;
     font-size: 1rem;
@@ -91,18 +95,21 @@
   #inputCont {
     width: 95%;
     max-width: 700px;
-    padding: 16px 30px;
+    padding: 12px 16px;
     background: #1c2733;
     border-top: 1px solid #4f8bd6;
     display: flex;
-    gap: 16px;
+    gap: 10px;
     border-radius: 0 0 16px 16px;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
   }
   #userInput {
     flex-grow: 1;
     font-family: 'Fira Mono', monospace;
     font-size: 1rem;
-    padding: 16px 22px;
+    padding: 14px 16px;
     border-radius: 16px;
     border: none;
     outline: none;
@@ -121,7 +128,7 @@
     background: #5bb1ff;
     border: none;
     border-radius: 16px;
-    padding: 0 34px;
+    padding: 0 24px;
     font-weight: 700;
     font-size: 1rem;
     color: #122c54;
@@ -143,6 +150,26 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  /* Responsivlik */
+  @media (max-width: 480px) {
+    header {
+      font-size: 2rem;
+      margin: 20px 0 10px 0;
+    }
+    .msg {
+      font-size: 0.9rem;
+      padding: 12px 14px;
+    }
+    #userInput {
+      font-size: 0.9rem;
+      padding: 12px 14px;
+    }
+    #sendBtn {
+      padding: 0 16px;
+      font-size: 0.9rem;
     }
   }
 </style>
@@ -231,8 +258,10 @@
 
     let ans = findAnswer(msg);
     if(ans){
-      appendMessage(ans, 'bot');
-      enableInput();
+      setTimeout(() => {
+        appendMessage(ans, 'bot');
+        enableInput();
+      }, 500);
       return;
     }
 
@@ -240,9 +269,10 @@
     for(let i=0; i<5; i++){
       sugg += `- ${getRandomSample(i)}\n`;
     }
-    appendMessage(`Bağışla, bunu bilmirəm.\nAmma bunları soruşa bilərsən:\n${sugg}`, 'bot');
-
-    enableInput();
+    setTimeout(() => {
+      appendMessage(`Bağışla, bunu bilmirəm.\nAmma bunları soruşa bilərsən:\n${sugg}`, 'bot');
+      enableInput();
+    }, 600);
   }
 
   function enableInput(){
